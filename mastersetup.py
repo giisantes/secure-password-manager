@@ -1,8 +1,10 @@
-
+__package__ = "mastersetup"
+import auth
+from pathlib import Path
 
 def set_master_password():
     
-    master_password = input("\n Please set your master password: ")
+    master_password = input("\nPlease set your master password: ")
 
     if len(master_password) < 8: 
         print("Password must be at least 8 characters long. Please try again.")
@@ -29,10 +31,12 @@ def set_master_password():
         if master_password != confirm_password:
             print("Passwords do not match. Please try again.")
             return set_master_password()
-        else:
+        elif master_password == confirm_password:
+            masterpassfile = Path(__file__).parent / "masterpass.hash"
             print("Master password set successfully.")
-            return master_password
+            hashed_salt, hashed_password = auth.hash_password(master_password)
+            Path.write_text(masterpassfile, f"{hashed_salt}:{hashed_password}")
         
-def first_time_setup():
-    print("As this is your first time running the application you will need to set a master password. This will be needed to access your stored passwords in the future.")
+def firsttimesetup():
+    print("As this is your first time running the application you will need to set a master password. \n This will be needed to access your stored passwords in the future.")
     set_master_password()
