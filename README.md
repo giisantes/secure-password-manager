@@ -9,7 +9,7 @@ This project uses a Kanban board to track development progress for the MVP of th
 
 ## Kanban Board 
 
-https://github.com/users/ghasan-yousef/projects/2
+https://github.com/users/giisantes/projects/2
 
 ### User Stories
 All MVP features are tracked as GitHub Issues. Each issue includes:
