@@ -38,5 +38,6 @@ def set_master_password():
             Path.write_text(masterpassfile, f"{hashed_salt}:{hashed_password}")
         
 def firsttimesetup():
-    print("As this is your first time running the application you will need to set a master password. \n This will be needed to access your stored passwords in the future.")
+    print("\nAs this is your first time running the application you will need to set a master password. \nThis will be needed to access your stored passwords in the future.")
     set_master_password()
+

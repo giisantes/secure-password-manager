@@ -21,9 +21,18 @@ def master_password_authentication():
     
     if not masterpassfile.exists(): # First time setup
         mastersetup.firsttimesetup()
+        return master_password_authentication()
 
 
     else: #logic for entering master password that has already been set
-        input_password = input("Please enter your master password: ")
+        input_password = input("\nPlease enter your master password to login: ")
         stored_data = Path.read_text(masterpassfile).strip()
-        
+        stored_salt_hex, stored_password_hash_hex = stored_data.split(":")
+        stored_salt = bytes.fromhex(stored_salt_hex)
+        _, input_password_hash_hex = hash_password(input_password, stored_salt)
+        if input_password_hash_hex == stored_password_hash_hex:
+            print("Login successful.")
+        else:
+            print("Incorrect master password. Please try again.")
+            return master_password_authentication()
+
