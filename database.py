@@ -20,7 +20,7 @@ def insert_password(site: str, email: str, username: str, encrypted_password: st
     cursor = conn.cursor()
     cursor.execute("""
         INSERT INTO passwords (site, email, username, encrypted_password)
-        VALUES (?, ?, ?, ?)                                                 #helps prevent SQL injection
+        VALUES (?, ?, ?, ?)
     """, (site, email, username, encrypted_password))
     conn.commit()
     conn.close()
@@ -33,3 +33,6 @@ def select_password_by_site(site: str):
         FROM passwords
         WHERE site = ?
     """, (site,))
+    results = cursor.fetchall()
+    conn.close()
+    return results  

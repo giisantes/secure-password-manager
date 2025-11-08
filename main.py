@@ -6,11 +6,13 @@ def start():
     auth.master_password_authentication()
 
 def mainn():
-    if not auth.master_password_authentication():
+    
+    cipher = auth.master_password_authentication()
+
+    if not cipher:
         return
     
     while True:
-        cipher = auth.master_password_authentication()
         print("\nPassword manager")
         print("1. Add a new password")
         print("2. View Saved Passwords")
