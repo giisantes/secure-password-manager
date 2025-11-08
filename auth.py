@@ -3,6 +3,9 @@ import hashlib
 import os
 from pathlib import Path
 import mastersetup
+from crypto import derive_key
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 def hash_password(password: str, salt: bytes = None) -> tuple:
 
@@ -10,10 +13,14 @@ def hash_password(password: str, salt: bytes = None) -> tuple:
         # Generate a new random salt
         salt = os.urandom(16)
 
-    # Hash the password with the salt using SHA-256
-    password_hash = hashlib.sha256(salt + password.encode()).digest()
-    #.encode converts the password string to bytes .digest() returns the binary hash value
-    # returns the salt and the hashed password
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100_000,
+    )
+
+    password_hash = kdf.derive(password.encode())
     return salt.hex(), password_hash.hex()
 
 def master_password_authentication():
@@ -23,16 +30,17 @@ def master_password_authentication():
         mastersetup.firsttimesetup()
         return master_password_authentication()
 
-
-    else: #logic for entering master password that has already been set
-        input_password = input("\nPlease enter your master password to login: ")
-        stored_data = Path.read_text(masterpassfile).strip()
-        stored_salt_hex, stored_password_hash_hex = stored_data.split(":")
-        stored_salt = bytes.fromhex(stored_salt_hex)
-        _, input_password_hash_hex = hash_password(input_password, stored_salt)
-        if input_password_hash_hex == stored_password_hash_hex:
-            print("Login successful.")
-        else:
-            print("Incorrect master password. Please try again.")
-            return master_password_authentication()
+    input_password = input("\nPlease enter your master password: ")
+    stored_data = Path.read_text(masterpassfile).strip()
+    stored_salt_hex, stored_password_hash_hex = stored_data.split(":")
+    stored_salt = bytes.fromhex(stored_salt_hex)
+    _, input_password_hash_hex = hash_password(input_password, stored_salt)
+   
+    if input_password_hash_hex == stored_password_hash_hex:
+        print("Login successful.")
+        cipher = derive_key(input_password, bytes.fromhex(stored_salt_hex))
+        return cipher
+    else:
+        print("Incorrect master password. Please try again.")
+        return master_password_authentication()
 

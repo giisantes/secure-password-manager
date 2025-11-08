@@ -1,14 +1,16 @@
 import auth
 import mastersetup
+from menuoptions import add_password, view_passwords
 
 def start():
     auth.master_password_authentication()
 
-def main():
+def mainn():
     if not auth.master_password_authentication():
         return
     
     while True:
+        cipher = auth.master_password_authentication()
         print("\nPassword manager")
         print("1. Add a new password")
         print("2. View Saved Passwords")
@@ -16,11 +18,11 @@ def main():
         
         choice = input("Please select an option: ")
         
-        if choice == '1':
-            add_password()
+        if choice == '1': 
+            add_password(cipher)
         
         elif choice == '2':
-            view_passwords()
+            view_passwords(cipher)
             
         elif choice == '3':
             print("Exiting the application. Goodbye!")
@@ -31,4 +33,4 @@ def main():
     
         
 if __name__ == "__main__":
-    main()
+    mainn()

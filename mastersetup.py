@@ -33,10 +33,10 @@ def set_master_password():
             return set_master_password()
         elif master_password == confirm_password:
             masterpassfile = Path(__file__).parent / "masterpass.hash"
-            print("Master password set successfully.")
             hashed_salt, hashed_password = auth.hash_password(master_password)
             Path.write_text(masterpassfile, f"{hashed_salt}:{hashed_password}")
-        
+            print("Master password set successfully.")
+            
 def firsttimesetup():
     print("\nAs this is your first time running the application you will need to set a master password. \nThis will be needed to access your stored passwords in the future.")
     set_master_password()
