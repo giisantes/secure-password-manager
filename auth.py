@@ -44,3 +44,18 @@ def master_password_authentication():
         print("Incorrect master password. Please try again.")
         return master_password_authentication()
 
+def verify_master_password(input_password: str) -> bool:
+    masterpassfile = Path(__file__).parent / "masterpass.hash"
+    
+    if not masterpassfile.exists():
+        return False
+
+    stored_data = Path.read_text(masterpassfile).strip()
+    stored_salt_hex, stored_password_hash_hex = stored_data.split(":")
+    stored_salt = bytes.fromhex(stored_salt_hex)
+    _, input_password_hash_hex = hash_password(input_password, stored_salt)
+   
+    if (input_password_hash_hex == stored_password_hash_hex):
+        return True
+    else:
+        return False

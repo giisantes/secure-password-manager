@@ -1,5 +1,6 @@
 from database import insert_password, select_password_by_site
 import auth
+import sqlite3
 
 def add_password(cipher):
     
@@ -23,7 +24,7 @@ def add_password(cipher):
 
 def view_passwords(cipher):
 
-    print("\nView saved passwords")
+    print("\nView saved passwords\n")
     desired_site = input("Enter the name of the site you want to view passwords for: ").strip()
     if not desired_site:
         print("Site name is required. Please try again.")
@@ -43,6 +44,37 @@ def view_passwords(cipher):
        #decrypt the password before displaying
         decrypted_password = cipher.decrypt(encrypted_password.encode()).decode()
         print(f"Password: {decrypted_password}")
+        
+def clear_passwords():
+    conn = sqlite3.connect('passwords.db')
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM passwords")
+    conn.commit()
 
+def view_all_passwords(cipher):
 
+    print("\nView all saved passwords\n")
+    
+    conn = sqlite3.connect("passwords.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT site, email, username, encrypted_password
+        FROM passwords
+    """)
+    results = cursor.fetchall()
+    conn.close()
+
+    if not results:
+        print("No passwords saved.")
+        return
+    
+    for site, email, username, encrypted_password in results:
+        print(f"\nSite: {site}")
+        if email:
+            print(f"Email: {email}")
+        if username:
+            print(f"Username: {username}")
+       #decrypt the password before displaying
+        decrypted_password = cipher.decrypt(encrypted_password.encode()).decode()
+        print(f"Password: {decrypted_password}")
        
